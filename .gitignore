@@ -1,3 +1,5 @@
-*.txt
-run
-*.out
+bin/
+build/
+input.txt
+output.txt
+README.html

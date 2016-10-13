@@ -14,7 +14,6 @@ FILE *fid;
 
 void generate_test(int input_n, int input_m) {
   fid = fopen("input.txt", "w");
-  fprintf(fid, "%d %d\n", input_n, input_m);
   for (int i = 0; i < input_n; ++i) {
     for (int j = 0; j < input_m; ++j) {
       a[i][j] = rand() % 100 - rand() % 100 + (rand() % 100) / 100.;
@@ -25,21 +24,17 @@ void generate_test(int input_n, int input_m) {
   fclose(fid);
 }
 
-double run_hungarian() {
+double run_hungarian(int input_n, int input_m) {
   fid = fopen("input.txt", "r");
-  hungarian_assignment.ReadCostMatrix(fid);
+  hungarian_assignment.ReadCostMatrix(fid, input_n, input_m);
   fclose(fid);
   fid = fopen("output.txt", "w");
   hungarian_assignment.PrintAssignment(fid);
   fclose(fid);
-
   fid = fopen("output.txt", "r");
-  int k;
-  fscanf(fid, "%d", &k);
   double reported_score = 0;
-  while (k--) {
-    int i, j;
-    fscanf(fid, "%d%d", &i, &j);
+  int i, j;
+  while (fscanf(fid, "%d%d", &i, &j) > 0) {
     reported_score += a[i][j];
   }
   fclose(fid);
@@ -72,12 +67,12 @@ double solve_test() {
 }
 int main() {
   srand(1);
-  printf("Correctness testing...");
-  for (int iters = 0; iters < 10; ++iters) {
+  printf("Correctness testing (total 1000)...");
+  for (int iters = 0; iters < 1000; ++iters) {
     n = 1 + rand() % kMaxTest;
     m = 1 + rand() % kMaxTest;
     generate_test(n, m);
-    double reported_score = run_hungarian();
+    double reported_score = run_hungarian(n, m);
     double best_score = solve_test();
     if (best_score - reported_score > 1e-6 ||
         reported_score - best_score > 1e-6) {
@@ -102,9 +97,11 @@ int main() {
     generate_test(n, n);
     printf("%d x %d: ", n, n);
     double t_start = clock();
-    run_hungarian();
+    run_hungarian(n, n);
     double t_end = clock();
     printf("%0.3f\n", (t_end - t_start) / CLOCKS_PER_SEC);
     n *= 2;
   }
+
+  printf("Cleaning up...");
 }

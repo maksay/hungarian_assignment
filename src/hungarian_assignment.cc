@@ -6,8 +6,10 @@
 #include <cstdlib>
 HungarianAssignment::HungarianAssignment() {}
 
-void HungarianAssignment::ReadCostMatrix(FILE* fid) {
-  fscanf(fid, "%d%d", &num_rows, &num_cols);
+void HungarianAssignment::ReadCostMatrix(FILE* fid, int input_num_rows,
+                                         int input_num_cols) {
+  num_rows = input_num_rows;
+  num_cols = input_num_cols;
   if (num_rows > num_cols) {
     num_objs = num_rows;
   } else {
@@ -71,7 +73,6 @@ void HungarianAssignment::PrintAssignment(FILE* fid) {
   }
 
   int cnt_matched = 0;
-  int iter = 0;
   while (cnt_matched < num_objs) {
     // Clear used nodes and try to run dfs for all not yet matched nodes
     for (int obj_idx = 0; obj_idx < num_objs; ++obj_idx) {
@@ -116,13 +117,6 @@ void HungarianAssignment::PrintAssignment(FILE* fid) {
     }
   }
 
-  int good_matches = 0;
-  for (int row_idx = 0; row_idx < num_rows; ++row_idx) {
-    if (row_match[row_idx] < num_cols) {
-      ++good_matches;
-    }
-  }
-  fprintf(fid, "%d\n", good_matches);
   for (int row_idx = 0; row_idx < num_rows; ++row_idx) {
     if (row_match[row_idx] < num_cols) {
       fprintf(fid, "%d %d\n", row_idx, row_match[row_idx]);
